@@ -8,27 +8,24 @@ app = FastAPI()
 
 ################################ Data model for the file structure #################################
 
-class FileModel(BaseModel):
-    folder : list =[]
-
 @app.get("/")
 async def r():
     return {"100": "Ha Ha it's working" }
+
+class Folder(BaseModel):
+    path : str  
 ###################### API for creating folders ##########################
 @app.post("/folder")
-async def filedata(data:FileModel):
-    print (data.folder)
-    print(type(data.folder))
-    for i in data.folder:
-        try: 
-            os.mkdir(i)
-        except FileExistsError:
-            return {'Error': "Folder already exists"}
-        else:
-            return {"100": "folder created sucessfully"}
+async def filedata(data: Folder):
+    try: 
+        os.makedirs(data.path)
+    except FileExistsError:
+        return {'Error': "Folder already exists"}
+    else:
+        return {"100": "folder created sucessfully"}
+
 
 ###################### data model for file upload ###################################
-
 @app.post("/upload")
 async def upload(files: List[UploadFile] = File(...)):
     for file in files:
